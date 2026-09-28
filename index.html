@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="es">  
+<head>  
+    <meta charset="UTF-8">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+    <title>Para Violet 𑣲 | Visual Novel Style</title>  
+    <!-- Fuentes Google Estilo Anime / Femenino / Kawaii -->  
+    <link rel="preconnect" href="https://fonts.googleapis.com">  
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>  
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;800&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Great+Vibes&family=Playfair+Display:ital,wght@0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;600&family=M+PLUS+Rounded+1c:wght@400;700&display=swap" rel="stylesheet">  
+
+    <style>  
+        :root {  
+            --anime-pink: #ff75a0;  
+            --anime-light-pink: #ffb3c6;  
+            --anime-deep-pink: #e0537d;  
+            --anime-lavender: #d6bcfa;  
+            --anime-soft-glow: rgba(255, 117, 160, 0.45);  
+            --glass-bg: rgba(30, 12, 24, 0.82);  
+            --glass-border: rgba(255, 179, 198, 0.4);  
+        }  
+
+        * {  
+            margin: 0;  
+            padding: 0;  
+            box-sizing: border-box;  
+            scroll-behavior: smooth;  
+        }  
+
+        body {  
+            font-family: 'Plus Jakarta Sans', sans-serif;  
+            background: #10040b;  
+            background-image:   
+                radial-gradient(circle at 10% 20%, rgba(255, 117, 160, 0.28) 0px, transparent 40%),  
+                radial-gradient(circle at 90% 80%, rgba(214, 188, 250, 0.22) 0px, transparent 40%),  
+                radial-gradient(circle at 50% 50%, rgba(20, 6, 14, 0.96) 0px, transparent 90%);  
+            color: #ffedf2;  
+            min-height: 100vh;  
+            overflow-x: hidden;  
+            position: relative;  
+        }  
+
+        /* PANTALLA DE CARGA ANIME MÁGICA CON NUBES Y DESTELLOS */  
+        #loader-screen {  
+            position: fixed;  
+            top: 0;  
+            left: 0;  
+            width: 100%;  
+            height: 100%;  
+            background: radial-gradient(circle, #2a0c20 0%, #12030c 100%);  
+            display: flex;  
+            flex-direction: column;  
+            justify-content: center;  
+            align-items: center;  
+            z-index: 9999;  
+            transition: opacity 1.2s ease, visibility 1.2s ease;  
+            overflow: hidden;  
+        }  
+
+        /* Elementos flotantes de nubes en la pantalla de carga */  
+        .loader-cloud {  
+            position: absolute;  
+            background: rgba(255, 179, 198, 0.08);  
+            backdrop-filter: blur(12px);  
+            border-radius: 50px;  
+            animation: cloudDrift 8s ease-in-out infinite alternate;  
+            z-index: 1;  
+        }  
+
+        .lc-1 { width: 180px; height: 60px; top: 15%; left: 10%; animation-duration: 7s; }  
+        .lc-2 { width: 240px; height: 75px; bottom: 15%; right: 10%; animation-duration: 9s; }  
+
+        @keyframes cloudDrift {  
+            0% { transform: translateY(0px) translateX(0px); opacity: 0.4; }  
+            100% { transform: translateY(-15px) translateX(25px); opacity: 0.8; }  
+        }  
+
+        .loader-glow-orb {  
+            position: absolute;  
+            width: 380px;  
+            height: 380px;  
+            background: radial-gradient(circle, rgba(255, 117, 160, 0.4) 0%, rgba(214, 188, 250, 0.1) 60%, transparent 80%);  
+            border-radius: 50%;  
+            filter: blur(60px);  
+            animation: orbPulse 4s ease-in-out infinite alternate;  
+            z-index: 1;  
+        }  
+
+        @keyframes orbPulse {  
+            0% { transform: scale(0.85); opacity: 0.5; }  
+            100% { transform: scale(1.2); opacity: 0.9; }  
+        }  
+
+        .loader-text-msg {  
+            font-family: 'Great Vibes', cursive;  
+            font-size: 3.2rem;  
+            color: #ffb3c6;  
+            margin-bottom: 25px;  
+            z-index: 2;  
+            text-shadow: 0 0 20px rgba(255, 179, 198, 0.8), 0 0 40px rgba(255, 117, 160, 0.4);  
+            animation: textFloat 3s ease-in-out infinite alternate;  
+        }  
+
+        @keyframes textFloat {  
+            0% { transform: translateY(0px); }  
+            100% { transform: translateY(-6px); }  
+        }  
+
+        .progress-container {  
+            width: 340px;  
+            height: 16px;  
+            background: rgba(255, 255, 255, 0.05);  
+            backdrop-filter: blur(20px);  
+            border-radius: 30px;  
+            padding: 4px;  
+            border: 1px solid rgba(255, 179, 198, 0.4);  
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7), 0 0 25px rgba(255, 117, 160, 0.3);  
+            position: relative;  
+            z-index: 2;  
+        }  
+
+        .progress-bar {  
+            height: 100%;  
+            width: 0%;  
+            border-radius: 30px;  
+            background: linear-gradient(90deg, #d6bcfa, #ff75a0, #ffb3c6);  
+            box-shadow: 0 0 15px #ff75a0, 0 0 25px rgba(255, 117, 160, 0.8);  
+            transition: width 0.1s linear;  
+        }  
+
+        .loader-hidden {  
+            opacity: 0;  
+            visibility: hidden;  
+        }  
+
+        /* PARTÍCULAS / ILUMINACIÓN DE FONDO */  
+        #sparkles-canvas {  
+            position: fixed;  
+            top: 0;  
+            left: 0;  
+            width: 100%;  
+            height: 100%;  
+            pointer-events: none;  
+            z-index: 1;  
+        }  
+
+        /* NAVEGACIÓN ANIME GLASS */  
+        nav.glass-nav {  
+            position: fixed;  
+            top: 20px;  
+            left: 50%;  
+            transform: translateX(-50%);  
+            width: 90%;  
+            max-width: 1100px;  
+            background: rgba(35, 12, 25, 0.82);  
+            backdrop-filter: blur(20px);  
+            border: 1px solid var(--glass-border);  
+            border-radius: 50px;  
+            padding: 12px 35px;  
+            display: flex;  
+            justify-content: space-between;  
+            align-items: center;  
+            z-index: 1000;  
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.5), 0 0 20px rgba(255, 117, 160, 0.25);  
+        }  
+
+        .nav-logo {  
+            font-family: 'Great Vibes', cursive;  
+            font-size: 2.6rem;  
+            background: linear-gradient(45deg, #ffffff, #ffb3c6, #ff75a0);  
+            -webkit-background-clip: text;  
+            -webkit-text-fill-color: transparent;  
+            text-decoration: none;  
+            filter: drop-shadow(0 0 10px rgba(255, 179, 198, 0.6));  
+        }  
+
+        .nav-links {  
+            display: flex;  
+            gap: 30px;  
+            list-style: none;  
+        }  
+
+        .nav-links a {  
+            color: #ffd6e0;  
+            text-decoration: none;  
+            font-size: 0.9rem;  
+            letter-spacing: 1px;  
+            transition: all 0.3s ease;  
+        }  
+
+        .nav-links a:hover {  
+            color: #ffffff;  
+            text-shadow: 0 0 12px rgba(255, 179, 198, 1);  
+        }  
+
+        /* SECCIÓN HERO (PORTADA PRINCIPAL) */  
+        .hero {  
+            min-height: 100vh;  
+            display: flex;  
+            align-items: center;  
+            justify-content: center;  
+            padding: 120px 20px 60px;  
+            position: relative;  
+            z-index: 2;  
+            transition: opacity 0.5s ease;  
+        }  
+
+        .hero-container {  
+            max-width: 1100px;  
+            display: grid;  
+            grid-template-columns: 1fr 1fr;  
+            gap: 50px;  
+            align-items: center;  
+        }  
+
+        .hero-tag {  
+            font-family: 'M PLUS Rounded 1c', sans-serif;  
+            font-size: 0.9rem;  
+            letter-spacing: 5px;  
+            text-transform: uppercase;  
+            color: #ffb3c6;  
+            text-shadow: 0 0 12px rgba(255, 179, 198, 0.5);  
+            margin-bottom: 15px;  
+        }  
+
+        .hero-title {  
+            font-family: 'Cinzel', serif;  
+            font-size: 4rem;  
+            font-weight: 800;  
+            line-height: 1.1;  
+            background: linear-gradient(135deg, #ffffff 20%, #ffb3c6 60%, #ff75a0 100%);  
+            -webkit-background-clip: text;  
+            -webkit-text-fill-color: transparent;  
+            filter: drop-shadow(0 0 25px rgba(255, 117, 160, 0.4));  
+            margin: 0;  
+        }  
+
+        .hero-image-wrapper {  
+            position: relative;  
+            display: flex;  
+            justify-content: center;  
+        }  
+
+        .image-frame {  
+            position: relative;  
+            width: 100%;  
+            max-width: 420px;  
+            height: 520px;  
+            border-radius: 40px;  
+            padding: 14px;  
+            background: linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,117,160,0.15));  
+            border: 2px solid rgba(255, 179, 198, 0.5);  
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6), 0 0 40px rgba(255, 117, 160, 0.35);  
+        }  
+
+        .character-img {  
+            width: 100%;  
+            height: 100%;  
+            object-fit: cover;  
+            border-radius: 28px;  
+            display: block;  
+        }  
+
+        .badge-glow {  
+            position: absolute;  
+            bottom: -15px;  
+            right: -15px;  
+            background: rgba(35, 12, 25, 0.95);  
+            backdrop-filter: blur(12px);  
+            border: 2px solid #ff75a0;  
+            padding: 12px 24px;  
+            border-radius: 50px;  
+            font-family: 'Great Vibes', cursive;  
+            font-size: 1.8rem;  
+            color: #ffb3c6;  
+            box-shadow: 0 0 20px rgba(255, 117, 160, 0.6);  
+        }  
+
+        /* CAPA DE ILUMINACIÓN FLOTANTE AL HACER SCROLL */  
+        .cloud-scroll-overlay {  
+            position: fixed;  
+            top: 0;  
+            left: 0;  
+            width: 100%;  
+            height: 100%;  
+            pointer-events: none;  
+            z-index: 3;  
+            opacity: 0;  
+            transition: opacity 0.3s ease-out;  
+            background: radial-gradient(circle at 50% 30%, rgba(255, 117, 160, 0.25) 0%, rgba(16, 4, 11, 0.94) 80%);  
+            backdrop-filter: blur(10px);  
+        }  
+
+        .cloud-divider {  
+            position: absolute;  
+            width: 100%;  
+            left: 0;  
+            z-index: 4;  
+            pointer-events: none;  
+            overflow: hidden;  
+            line-height: 0;  
+        }  
+
+        .cloud-divider svg {  
+            position: relative;  
+            display: block;  
+            width: calc(140% + 1.3px);  
+            height: 130px;  
+            fill: rgba(255, 117, 160, 0.12);  
+            filter: drop-shadow(0 -10px 25px rgba(255, 117, 160, 0.4));  
+            animation: cloudFloat 6s ease-in-out infinite alternate;  
+        }  
+
+        @keyframes cloudFloat {  
+            0% { transform: translateX(0px); }  
+            100% { transform: translateX(-45px); }  
+        }  
+
+        /* SECCIÓN CARTA / CONTENIDO */  
+        .birthday-section {  
+            position: relative;  
+            z-index: 5;  
+            padding: 70px 20px 90px;  
+            max-width: 900px;  
+            margin: 0 auto;  
+        }  
+
+        .birthday-card {  
+            position: relative;  
+            background: rgba(35, 14, 25, 0.82);  
+            border: 2px solid rgba(255, 179, 198, 0.4);  
+            backdrop-filter: blur(25px);  
+            border-radius: 40px;  
+            padding: 60px 45px;  
+            box-shadow: 0 30px 70px rgba(0,0,0,0.6), 0 0 35px rgba(255, 117, 160, 0.25);  
+        }  
+
+        .cute-sticker {  
+            position: absolute;  
+            pointer-events: none;  
+            user-select: none;  
+            z-index: 10;  
+            filter: drop-shadow(0 0 10px rgba(255, 117, 160, 0.7));  
+            animation: floatSlow 4s ease-in-out infinite alternate;  
+        }  
+
+        .sticker-cloud { top: 30px; left: 30px; font-size: 2rem; }  
+        .sticker-star { top: 35px; right: 35px; font-size: 1.8rem; }  
+
+        .washi-tape {  
+            position: absolute;  
+            width: 85px;  
+            height: 26px;  
+            background: rgba(255, 117, 160, 0.4);  
+            backdrop-filter: blur(6px);  
+            border: 1px dashed rgba(255, 255, 255, 0.7);  
+            transform: rotate(-4deg);  
+            top: -14px;  
+            left: 35px;  
+            z-index: 5;  
+            border-radius: 5px;  
+            box-shadow: 0 0 10px rgba(255, 117, 160, 0.6);  
+        }  
+
+        .header-title-box {  
+            text-align: center;  
+            margin-bottom: 50px;  
+        }  
+
+        .happy-text {  
+            font-family: 'Courier Prime', monospace;  
+            letter-spacing: 12px;  
+            font-size: 1.1rem;  
+            color: #ffb3c6;  
+            text-transform: uppercase;  
+            text-shadow: 0 0 10px rgba(255, 117, 160, 0.5);  
+        }  
+
+        /* TIPOGRAFÍA ELEGANTE Y CURSIVA PARA "Para Violet" */  
+        .birthday-font {  
+            font-family: 'Great Vibes', cursive;  
+            font-size: 5.5rem;  
+            font-weight: normal;  
+            background: linear-gradient(135deg, #ffffff 25%, #ffb3c6 65%, #ff75a0 100%);  
+            -webkit-background-clip: text;  
+            -webkit-text-fill-color: transparent;  
+            margin-top: 5px;  
+            line-height: 1.1;  
+            filter: drop-shadow(0 0 20px rgba(255, 117, 160, 0.65));  
+        }  
+
+        .header-sub-decor {  
+            font-family: 'Courier Prime', monospace;  
+            font-size: 0.95rem;  
+            color: rgba(255, 237, 242, 0.5);  
+            letter-spacing: 15px;  
+            margin-top: 10px;  
+        }  
+
+        .collage-layout {  
+            display: grid;  
+            grid-template-columns: 1fr 1fr;  
+            gap: 35px;  
+            align-items: center;  
+        }  
+
+        .image-combo-container {  
+            position: relative;  
+            width: 100%;  
+            height: 330px;  
+        }  
+
+        .rect-photo-1 {  
+            width: 82%;  
+            height: 270px;  
+            object-fit: cover;  
+            border-radius: 22px;  
+            box-shadow: 0 15px 30px rgba(0,0,0,0.6), 0 0 15px rgba(255, 117, 160, 0.35);  
+            border: 2px solid rgba(255, 179, 198, 0.4);  
+        }  
+
+        .circle-photo-overlay {  
+            position: absolute;  
+            bottom: 0;  
+            right: 0;  
+            width: 175px;  
+            height: 175px;  
+            border-radius: 50%;  
+            object-fit: cover;  
+            border: 4px solid #10040b;  
+            box-shadow: 0 15px 30px rgba(0,0,0,0.8), 0 0 20px rgba(255, 117, 160, 0.6);  
+            z-index: 3;  
+        }  
+
+        .text-card-box {  
+            background: rgba(22, 8, 16, 0.75);  
+            border: 1px dashed rgba(255, 179, 198, 0.45);  
+            border-radius: 22px;  
+            padding: 28px;  
+            margin-bottom: 20px;  
+            box-shadow: inset 0 0 18px rgba(255, 117, 160, 0.1), 0 0 15px rgba(255, 117, 160, 0.12);  
+        }  
+
+        .typewriter-text {  
+            font-family: 'Courier Prime', monospace;  
+            font-size: 0.9rem;  
+            line-height: 1.8;  
+            color: #ffe6ee;  
+            text-align: justify;  
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.2);  
+        }  
+
+        .divine-box {  
+            text-align: center;  
+            margin: 20px 0;  
+        }  
+
+        .divine-sub {  
+            font-family: 'Courier Prime', monospace;  
+            font-size: 0.8rem;  
+            border: 1px solid rgba(255, 179, 198, 0.45);  
+            padding: 7px 18px;  
+            border-radius: 15px;  
+            display: inline-block;  
+            color: #ffb3c6;  
+            background: rgba(255, 117, 160, 0.12);  
+            box-shadow: 0 0 10px rgba(255, 117, 160, 0.3);  
+        }  
+
+        @keyframes floatSlow {  
+            0% { transform: translateY(0px); }  
+            100% { transform: translateY(-8px); }  
+        }  
+
+        @media (max-width: 768px) {  
+            .hero-container, .collage-layout {  
+                grid-template-columns: 1fr;  
+            }  
+            .rect-photo-1 {  
+                width: 100%;  
+            }  
+            .circle-photo-overlay {  
+                right: 10px;  
+            }  
+            .birthday-card {  
+                padding: 35px 20px;  
+            }  
+            .birthday-font {  
+                font-size: 4.2rem;  
+            }  
+        }  
+    </style>  
+</head>  
+<body>  
+
+<!-- PANTALLA DE CARGA CON NUBES MÁGICAS -->  
+<div id="loader-screen">  
+    <div class="loader-cloud lc-1"></div>  
+    <div class="loader-cloud lc-2"></div>  
+    <div class="loader-glow-orb"></div>  
+      
+    <div class="loader-text-msg">Cargando...</div>  
+      
+    <div class="progress-container">  
+        <div class="progress-bar" id="progress-bar"></div>  
+    </div>  
+</div>  
+
+<!-- CAPA DE ILUMINACIÓN DE FONDO AL HACER SCROLL -->  
+<div class="cloud-scroll-overlay" id="cloudOverlay"></div>  
+
+<canvas id="sparkles-canvas"></canvas>  
+
+<nav class="glass-nav">  
+    <a href="#" class="nav-logo">⋆ V. Andrew ⋆</a>  
+    <ul class="nav-links">  
+        <li><a href="#hero">Inicio</a></li>  
+        <li><a href="#birthday">Carta</a></li>  
+    </ul>  
+</nav>  
+
+<!-- SECCIÓN HERO (PORTADA PRINCIPAL) -->  
+<section class="hero" id="hero">  
+    <div class="hero-container">  
+        <div class="hero-text"> 
+            <div class="hero-tag">- MY FRIEND -</div>  
+            <h1 class="hero-title">♯VIOLET</h1>  
+        </div>  
+          
+        <div class="hero-image-wrapper">  
+            <div class="image-frame">  
+                <img src="N1.jpg" alt="Portada principal" class="character-img" onerror="this.src='https://images.unsplash.com/photo-1578632767115-351597cf2477?w=600&auto=format&fit=crop&q=60';">  
+                <div class="badge-glow">𑣲 𝓥</div>  
+            </div>  
+        </div>  
+    </div>  
+</section>  
+
+<!-- DIVISOR ESTÉTICO ANIME -->  
+<div class="cloud-divider">  
+    <svg viewBox="0 0 1200 120" preserveAspectRatio="none">  
+        <path d="M0,0 C150,90 350,-40 500,60 C650,140 900,10 1200,40 L1200,120 L0,120 Z"></path>  
+    </svg>  
+</div>  
+
+<!-- SECCIÓN CARTA Y RECUERDOS -->  
+<section class="birthday-section" id="birthday">  
+    <div class="birthday-card">  
+          
+        <!-- STICKERS CUTE -->  
+        <div class="cute-sticker sticker-cloud">🌸</div>  
+        <div class="cute-sticker sticker-star">🌸</div>  
+
+        <!-- ENCABEZADO -->  
+        <div class="header-title-box">  
+            <div class="happy-text">. UNA CARTA CON TODO MI CARIÑO .</div>  
+            <div class="birthday-font">Para Violet</div>  
+            <div class="header-sub-decor">⭒ 🎀 ⭒</div>  
+        </div>  
+
+        <!-- COLLAGE -->  
+        <div class="collage-layout">  
+              
+            <!-- TOP IZQUIERDA: FOTOS -->  
+            <div class="image-combo-container">  
+                <div class="washi-tape"></div>  
+                <img src="N3.jpg" alt="Foto principal" class="rect-photo-1" onerror="this.src='https://images.unsplash.com/photo-1534447677768-be436bb09401?w=600&auto=format&fit=crop&q=60';">  
+                <img src="N2.jpg" alt="Foto circular" class="circle-photo-overlay" onerror="this.src='https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=600&auto=format&fit=crop&q=60';">  
+            </div>  
+
+            <!-- TOP DERECHA: TEXTO PARTE 1 -->  
+            <div>  
+                <div class="text-card-box">  
+                    <p class="typewriter-text">  
+                        Holaaa amiguita, no se por donde empezar, pero quiero decirte lo importante que eres para mi en mi vida. De verdad te aprecio muchísimo, te quierooo muchooo y siento que cada día que pasa te conviertes en esa personita especial.<br><br>  
+                        Muchas gracias por todo, por estar ahí siempre para mí en los momentos en que más lo he necesitado. Y quiero que recuerdes esto muy bien: así como tú estás para mí, yo siempre estaré ahí para ti cuando lo necesites, sin importar nada, creeme que todo esto lo hago de corazón y me gustaría ser esa personita en la que tengas esa confianza y recurras cuando te sientas mal.  
+                    </p>  
+                </div>  
+                <div class="divine-box">  
+                    <div class="divine-sub">──── Best Friend ────</div>  
+                </div>  
+            </div>  
+
+            <!-- BOTTOM IZQUIERDA: TEXTO PARTE 2 -->  
+            <div>  
+                <div class="text-card-box">  
+                    <p class="typewriter-text">  
+                        Me encanta jugar Free Fire contigo y pasar un ratito jugando para distraerme, hasta me divierto cuando nos eliminan rápido JAJAJA. Creeme que de verdad aprecio nuestros momentos totalmente randoms, esas ocurrencias que surgen de la nada y hasta esos momentos incómodos por no saber qué decir que al final terminan siendo parte de nuestro dia a dia.<br><br>  
+                        Adore cuando me contaste de tus personajes favoritos, como Nagi y Sugawara, y la emoción con la que hablas de ellos, incluso hasta te hice este detallito pero con un algunas imagenes de Nagi :D  
+                        Espero te guste, lo hice con cariño y amor para ti ♡  
+                    </p>  
+                </div>  
+            </div>  
+
+        </div>  
+
+    </div>  
+</section>  
+
+<!-- SCRIPTS -->  
+<script>  
+    // ANIMACIÓN DE CARGA PROGRESIVA DE LA BARRA  
+    document.addEventListener("DOMContentLoaded", () => {  
+        const progressBar = document.getElementById("progress-bar");  
+        const loaderScreen = document.getElementById("loader-screen");  
+
+        let progress = 0;  
+
+        const interval = setInterval(() => {  
+            progress += Math.random() * 4 + 1;  
+
+            if (progress >= 100) {  
+                progress = 100;  
+                clearInterval(interval);  
+
+                setTimeout(() => {  
+                    loaderScreen.classList.add("loader-hidden");  
+                }, 400);  
+            }  
+
+            progressBar.style.width = progress + "%";  
+        }, 50);  
+    });  
+
+    // EFECTO DE ILUMINACIÓN AL BAJAR/SUBIR LA PÁGINA  
+    const cloudOverlay = document.getElementById('cloudOverlay');  
+    const heroSection = document.getElementById('hero');  
+
+    window.addEventListener('scroll', () => {  
+        const scrollPos = window.scrollY;  
+        const windowHeight = window.innerHeight;  
+          
+        let opacity = Math.min(scrollPos / (windowHeight * 0.65), 0.85);  
+        cloudOverlay.style.opacity = opacity;  
+
+        if (heroSection) {  
+            heroSection.style.opacity = 1 - Math.min(scrollPos / (windowHeight * 0.8), 1);  
+        }  
+    });  
+
+    // ANIMACIÓN DE FONDO DE DESTELLOS MÁGICOS TIPO ANIME  
+    const canvas = document.getElementById('sparkles-canvas');  
+    const ctx = canvas.getContext('2d');  
+    let particles = [];  
+
+    function resizeCanvas() {  
+        canvas.width = window.innerWidth;  
+        canvas.height = window.innerHeight;  
+    }  
+    window.addEventListener('resize', resizeCanvas);  
+    resizeCanvas();  
+
+    class Particle {  
+        constructor() {  
+            this.x = Math.random() * canvas.width;  
+            this.y = Math.random() * canvas.height;  
+            this.size = Math.random() * 2.5 + 0.8;  
+            this.speedX = Math.random() * 0.4 - 0.2;  
+            this.speedY = Math.random() * -0.5 - 0.2;  
+            this.opacity = Math.random() * 0.8;  
+            this.glow = Math.random() * 10;  
+        }  
+        update() {  
+            this.x += this.speedX;  
+            this.y += this.speedY;  
+            if (this.y < 0) this.y = canvas.height;  
+            if (this.x < 0 || this.x > canvas.width) this.x = Math.random() * canvas.width;  
+        }  
+        draw() {  
+            ctx.shadowBlur = 12;  
+            ctx.shadowColor = '#ff75a0';  
+            ctx.fillStyle = `rgba(255, 179, 198, ${this.opacity})`;  
+            ctx.beginPath();  
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);  
+            ctx.fill();  
+            ctx.shadowBlur = 0; // Reset  
+        }  
+    }  
+
+    for (let i = 0; i < 80; i++) {  
+        particles.push(new Particle());  
+    }  
+
+    function animateParticles() {  
+        ctx.clearRect(0, 0, canvas.width, canvas.height);  
+        particles.forEach(p => {  
+            p.update();  
+            p.draw();  
+        });  
+        requestAnimationFrame(animateParticles);  
+    }  
+    animateParticles();  
+</script>  
+
+</body>  
+</html>
